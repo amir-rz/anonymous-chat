@@ -1,10 +1,11 @@
+# mysite/asgi.py
 import os
 
 import django
 from channels.http import AsgiHandler
 from channels.routing import ProtocolTypeRouter
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chat-project.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chat_project.settings')
 django.setup()
 
 application = ProtocolTypeRouter({
