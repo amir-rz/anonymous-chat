@@ -1,1 +1,1 @@
-web: gunicorn chat_project.wsgi
+web: python3 manage.py runserver 
