@@ -4,10 +4,10 @@ const $messageFormInput = $messageForm.querySelector("input");
 const $messageFormBtn = $messageForm.querySelector("button");
 const $geoBtn = document.querySelector("#get-geo");
 const $messages = document.querySelector("#messages");
-// const $userName = `anonymos${Math.random()*10000000}`
+const $userName = `anonymous${Math.floor(Math.random() * 10000000)}`;
 
 // Message template
-const messageTemplate = (data, type, className, me = false) => {
+const messageTemplate = (data, type, className, me, username) => {
   const $username = document.createElement(type);
   const $createdAt = document.createElement("p");
   const $info = document.createElement("div");
@@ -22,6 +22,9 @@ const messageTemplate = (data, type, className, me = false) => {
   if (className) {
     $message.className = className;
   }
+  // Username
+  $username.className = "username";
+  $username.textContent = username;
 
   // Time
   $createdAt.className = "sent-at";
@@ -29,9 +32,10 @@ const messageTemplate = (data, type, className, me = false) => {
   $createdAt.textContent = `${date.getHours()}:${date.getMinutes()}`;
 
   // Info (Username , Time)
+  $username.value = username;
   $info.className = "info";
   $info.appendChild($createdAt);
-
+  $info.appendChild($username);
   // Message
   $message.textContent = data.text || data;
 
@@ -47,18 +51,21 @@ const messageTemplate = (data, type, className, me = false) => {
 };
 
 const roomName = JSON.parse(document.getElementById("room-name").textContent);
-
 const chatSocket = new WebSocket(
   "ws://" + window.location.host + "/ws/chat/" + roomName + "/"
 );
 
 chatSocket.onmessage = function (e) {
   // const data = JSON.parse(e.data);
-  console.log(e.data);
   const data = JSON.parse(e.data);
-
+  console.log(e);
   const message = data.message;
-  $messages.appendChild(messageTemplate(message, "p", "message", true));
+  console.log(data.username == $userName);
+  if (data.username !== $userName) {
+    $messages.appendChild(
+      messageTemplate(message, "p", "message", false, data.username)
+    );
+  }
 };
 
 chatSocket.onclose = function (e) {
@@ -81,10 +88,13 @@ $messageForm.addEventListener("submit", (e) => {
     chatSocket.send(
       JSON.stringify({
         message: message,
+        username: $userName,
       })
     );
     // UI
-    $messages.appendChild(messageTemplate(message, "p", "message", false));
+    $messages.appendChild(
+      messageTemplate(message, "p", "message", true, $userName)
+    );
     $messages.scrollTo(0, $messages.scrollHeight);
   }
 
