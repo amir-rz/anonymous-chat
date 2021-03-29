@@ -97,7 +97,6 @@ $messageForm.addEventListener("submit", (e) => {
     );
     $messages.scrollTo(0, $messages.scrollHeight);
   }
-
   // ----
   // ----
 
